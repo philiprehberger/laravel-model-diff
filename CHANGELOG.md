@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-03-12
+
+### Added
+- Documentation for unit enum, timestamp, decimal:N, and collection cast types
+- Note about order-insensitive associative array comparison
+- 15 new tests covering integer/float casts, null transitions, collection/timestamp/decimal casts, malformed JSON, ignoring() immutability, attribute changes, and fromDirty with numeric casts
+
 ## [1.0.0] - 2026-03-09
 
 ### Added

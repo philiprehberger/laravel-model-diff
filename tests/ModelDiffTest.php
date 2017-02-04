@@ -27,6 +27,20 @@ enum PostStatus: string
     case Archived = 'archived';
 }
 
+enum Priority
+{
+    case Low;
+    case Medium;
+    case High;
+}
+
+enum Color
+{
+    case Red;
+    case Blue;
+    case Green;
+}
+
 // ---------------------------------------------------------------------------
 // Test models
 // ---------------------------------------------------------------------------
@@ -90,6 +104,28 @@ class TestUserNoLabels extends Model
     ];
 }
 
+class TestUserExtended extends Model
+{
+    use HasDiffLabels;
+
+    protected $table = 'test_users_extended';
+
+    protected $fillable = [
+        'name',
+        'color',
+        'tags',
+        'event_at',
+        'price',
+    ];
+
+    protected $casts = [
+        'color' => Color::class,
+        'tags' => 'collection',
+        'event_at' => 'timestamp',
+        'price' => 'decimal:2',
+    ];
+}
+
 // ---------------------------------------------------------------------------
 // The test case
 // ---------------------------------------------------------------------------
@@ -119,6 +155,16 @@ class ModelDiffTest extends TestCase
 
     protected function defineDatabaseMigrations(): void
     {
+        Schema::create('test_users_extended', function (Blueprint $table): void {
+            $table->id();
+            $table->string('name')->nullable();
+            $table->string('color')->nullable();
+            $table->json('tags')->nullable();
+            $table->timestamp('event_at')->nullable();
+            $table->decimal('price', 10, 2)->nullable();
+            $table->timestamps();
+        });
+
         Schema::create('test_users', function (Blueprint $table): void {
             $table->id();
             $table->string('name')->nullable();
@@ -521,6 +567,187 @@ class ModelDiffTest extends TestCase
         $this->assertArrayHasKey('Full Name', $readable);
         $this->assertArrayHasKey('old', $readable['Full Name']);
         $this->assertArrayHasKey('new', $readable['Full Name']);
+    }
+
+    // -----------------------------------------------------------------------
+    // Integer and float cast changes
+    // -----------------------------------------------------------------------
+
+    public function test_it_detects_integer_cast_change(): void
+    {
+        $before = $this->makeUser(['age' => 30]);
+        $after = TestUser::find($before->id);
+        $after->age = 31;
+        $after->save();
+
+        $result = $this->diff()->compare($before, $after);
+
+        $this->assertContains('age', $result->changedAttributes());
+    }
+
+    public function test_it_detects_float_cast_change(): void
+    {
+        $before = $this->makeUser(['score' => 1.5]);
+        $after = TestUser::find($before->id);
+        $after->score = 2.7;
+        $after->save();
+
+        $result = $this->diff()->compare($before, $after);
+
+        $this->assertContains('score', $result->changedAttributes());
+    }
+
+    // -----------------------------------------------------------------------
+    // UnitEnum (non-backed) comparison
+    // -----------------------------------------------------------------------
+
+    public function test_it_detects_unit_enum_change(): void
+    {
+        $ext = TestUserExtended::create(['name' => 'Alice', 'color' => 'Red']);
+        $after = TestUserExtended::find($ext->id);
+        $after->color = Color::Blue;
+        $after->save();
+
+        $result = $this->diff()->compare($ext, $after);
+
+        $this->assertContains('color', $result->changedAttributes());
+    }
+
+    // -----------------------------------------------------------------------
+    // Null transitions
+    // -----------------------------------------------------------------------
+
+    public function test_it_detects_null_to_value(): void
+    {
+        $before = $this->makeUser(['score' => null]);
+        $after = TestUser::find($before->id);
+        $after->score = 5.0;
+        $after->save();
+
+        $result = $this->diff()->compare($before, $after);
+
+        $this->assertContains('score', $result->changedAttributes());
+    }
+
+    public function test_it_detects_value_to_null(): void
+    {
+        $before = $this->makeUser(['score' => 5.0]);
+        $after = TestUser::find($before->id);
+        $after->score = null;
+        $after->save();
+
+        $result = $this->diff()->compare($before, $after);
+
+        $this->assertContains('score', $result->changedAttributes());
+    }
+
+    // -----------------------------------------------------------------------
+    // Collection, timestamp, and decimal casts
+    // -----------------------------------------------------------------------
+
+    public function test_it_handles_collection_cast(): void
+    {
+        $ext = TestUserExtended::create(['name' => 'Alice', 'tags' => ['php', 'laravel']]);
+        $after = TestUserExtended::find($ext->id);
+        $after->tags = ['php', 'vue'];
+        $after->save();
+
+        $result = $this->diff()->compare($ext, $after);
+
+        $this->assertContains('tags', $result->changedAttributes());
+    }
+
+    public function test_it_handles_timestamp_cast(): void
+    {
+        $ext = TestUserExtended::create(['name' => 'Alice', 'event_at' => 1700000000]);
+        $after = TestUserExtended::find($ext->id);
+        $after->event_at = 1700100000;
+        $after->save();
+
+        $result = $this->diff()->compare($ext, $after);
+
+        $this->assertContains('event_at', $result->changedAttributes());
+    }
+
+    public function test_it_handles_decimal_cast(): void
+    {
+        $ext = TestUserExtended::create(['name' => 'Alice', 'price' => '19.99']);
+        $after = TestUserExtended::find($ext->id);
+        $after->price = '29.99';
+        $after->save();
+
+        $result = $this->diff()->compare($ext, $after);
+
+        $this->assertContains('price', $result->changedAttributes());
+    }
+
+    // -----------------------------------------------------------------------
+    // Malformed JSON
+    // -----------------------------------------------------------------------
+
+    public function test_malformed_json_does_not_throw(): void
+    {
+        $before = $this->makeUser(['metadata' => ['key' => 'value']]);
+        $after = TestUser::find($before->id);
+        $after->metadata = ['key' => 'other'];
+        $after->save();
+
+        // Should complete without exception
+        $result = $this->diff()->compare($before, $after);
+
+        $this->assertTrue($result->hasChanges());
+    }
+
+    // -----------------------------------------------------------------------
+    // ignoring() immutability
+    // -----------------------------------------------------------------------
+
+    public function test_ignoring_returns_new_instance(): void
+    {
+        $original = $this->diff();
+        $withIgnored = $original->ignoring(['email']);
+
+        $this->assertNotSame($original, $withIgnored);
+    }
+
+    public function test_ignoring_does_not_mutate_original(): void
+    {
+        $before = $this->makeUser(['name' => 'Alice', 'email' => 'alice@example.com']);
+        $after = TestUser::find($before->id);
+        $after->name = 'Bob';
+        $after->email = 'bob@example.com';
+        $after->save();
+
+        $original = $this->diff();
+        $original->ignoring(['email']);
+
+        // Original should still report email changes
+        $result = $original->compare($before, $after);
+        $this->assertContains('email', $result->changedAttributes());
+    }
+
+    // -----------------------------------------------------------------------
+    // fromDirty with int/float
+    // -----------------------------------------------------------------------
+
+    public function test_from_dirty_detects_integer_change(): void
+    {
+        $model = $this->makeUser(['age' => 25]);
+        $model->age = 30;
+
+        $result = $this->diff()->fromDirty($model);
+
+        $this->assertContains('age', $result->changedAttributes());
+    }
+
+    public function test_from_dirty_detects_float_change(): void
+    {
+        $model = $this->makeUser(['score' => 1.5]);
+        $model->score = 9.9;
+
+        $result = $this->diff()->fromDirty($model);
+
+        $this->assertContains('score', $result->changedAttributes());
     }
 
     // -----------------------------------------------------------------------
