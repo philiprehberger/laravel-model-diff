@@ -13,12 +13,12 @@ use PhilipRehberger\ModelDiff\ModelDiff as ModelDiffClass;
  * @method static DiffResult fromDirty(\Illuminate\Database\Eloquent\Model $model)
  * @method static ModelDiffClass ignoring(array $attributes)
  *
- * @see \PhilipRehberger\ModelDiff\ModelDiff
+ * @see ModelDiffClass
  */
 class ModelDiff extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return \PhilipRehberger\ModelDiff\ModelDiff::class;
+        return ModelDiffClass::class;
     }
 }
