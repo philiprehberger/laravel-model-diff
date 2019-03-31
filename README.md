@@ -266,26 +266,14 @@ $result = $diff->compare($before, $after);
 
 ---
 
-## Testing
+## Development
 
 ```bash
 composer install
 vendor/bin/phpunit
-```
-
-Code style:
-
-```bash
-vendor/bin/pint
-```
-
-Static analysis:
-
-```bash
+vendor/bin/pint --test
 vendor/bin/phpstan analyse
 ```
-
----
 
 ## Changelog
 
