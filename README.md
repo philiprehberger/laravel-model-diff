@@ -6,10 +6,6 @@
 
 Track and display structured differences between Eloquent model versions with human-readable labels.
 
-`laravel-model-diff` gives you a clean, cast-aware diff between two snapshots of the same model (or between a model's dirty state and its last-saved values). It handles dates, JSON/arrays, booleans, backed enums, and numeric types correctly, and lets you attach human-readable labels to any attribute.
-
----
-
 ## Requirements
 
 | Dependency | Version |
