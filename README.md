@@ -196,7 +196,6 @@ $client->getDiffLabel('phone_number'); // "Phone Number"
 ]
 ```
 
----
 
 ## AttributeChange API
 

@@ -1,6 +1,6 @@
 {
     "name": "philiprehberger/laravel-model-diff",
-    "description": "Track and display structured differences between Eloquent model versions with human-readable labels.",
+    "description": "Track and display structured differences between Eloquent model versions with human-readable labels",
     "keywords": [
         "laravel",
         "eloquent",
