@@ -13,8 +13,6 @@ Track and display structured differences between Eloquent model versions with hu
 | PHP        | ^8.2    |
 | Laravel    | ^11.0 \| ^12.0 |
 
----
-
 ## Installation
 
 Install via Composer:
@@ -32,8 +30,6 @@ php artisan vendor:publish --tag=model-diff-config
 ```
 
 This creates `config/model-diff.php` in your application.
-
----
 
 ## Configuration
 
@@ -59,8 +55,6 @@ return [
 
 ];
 ```
-
----
 
 ## Basic Usage
 
@@ -114,8 +108,6 @@ $result = ModelDiff::ignoring(['internal_notes', 'cache_key'])
     ->compare($before, $after);
 ```
 
----
-
 ## Human-Readable Labels
 
 ### Using the HasDiffLabels trait
@@ -147,8 +139,6 @@ $client = new Client();
 $client->getDiffLabel('company_name'); // "Company Name"
 $client->getDiffLabel('phone_number'); // "Phone Number"
 ```
-
----
 
 ## API
 
@@ -208,8 +198,6 @@ foreach ($result->getChanges() as $change) {
 }
 ```
 
----
-
 ## Cast-Aware Comparison
 
 The package normalizes values before comparing them, so you never get false positives from type mismatches:
@@ -228,8 +216,6 @@ The package normalizes values before comparing them, so you never get false posi
 
 > **Note:** Associative arrays are compared order-insensitively — `['a' => 1, 'b' => 2]` equals `['b' => 2, 'a' => 1]`. Sequential (list) arrays are compared in order.
 
----
-
 ## Using the Facade
 
 The `ModelDiff` facade is registered automatically:
@@ -241,8 +227,6 @@ $result = ModelDiff::compare($before, $after);
 $result = ModelDiff::fromDirty($model);
 $result = ModelDiff::ignoring(['token'])->compare($before, $after);
 ```
-
----
 
 ## Using the Class Directly
 
@@ -258,8 +242,6 @@ public function __construct(private ModelDiff $diff) {}
 $diff = new ModelDiff();
 $result = $diff->compare($before, $after);
 ```
-
----
 
 ## Development
 
