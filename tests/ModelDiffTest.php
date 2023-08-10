@@ -751,6 +751,167 @@ class ModelDiffTest extends TestCase
     }
 
     // -----------------------------------------------------------------------
+    // DiffResult::only() and except()
+    // -----------------------------------------------------------------------
+
+    public function test_only_returns_filtered_diff_result(): void
+    {
+        $before = $this->makeUser(['name' => 'Alice', 'email' => 'alice@example.com', 'age' => 25]);
+        $after = TestUser::find($before->id);
+        $after->name = 'Bob';
+        $after->email = 'bob@example.com';
+        $after->age = 30;
+        $after->save();
+
+        $result = $this->diff()->compare($before, $after)->only(['name', 'email']);
+
+        $this->assertCount(2, $result->getChanges());
+        $this->assertContains('name', $result->changedAttributes());
+        $this->assertContains('email', $result->changedAttributes());
+        $this->assertNotContains('age', $result->changedAttributes());
+    }
+
+    public function test_only_with_nonexistent_attributes_returns_empty(): void
+    {
+        $before = $this->makeUser(['name' => 'Alice']);
+        $after = TestUser::find($before->id);
+        $after->name = 'Bob';
+        $after->save();
+
+        $result = $this->diff()->compare($before, $after)->only(['nonexistent']);
+
+        $this->assertFalse($result->hasChanges());
+        $this->assertSame([], $result->getChanges());
+    }
+
+    public function test_except_excludes_specified_attributes(): void
+    {
+        $before = $this->makeUser(['name' => 'Alice', 'email' => 'alice@example.com', 'age' => 25]);
+        $after = TestUser::find($before->id);
+        $after->name = 'Bob';
+        $after->email = 'bob@example.com';
+        $after->age = 30;
+        $after->save();
+
+        $result = $this->diff()->compare($before, $after)->except(['age']);
+
+        $this->assertContains('name', $result->changedAttributes());
+        $this->assertContains('email', $result->changedAttributes());
+        $this->assertNotContains('age', $result->changedAttributes());
+    }
+
+    public function test_except_with_nonexistent_attributes_returns_all(): void
+    {
+        $before = $this->makeUser(['name' => 'Alice']);
+        $after = TestUser::find($before->id);
+        $after->name = 'Bob';
+        $after->save();
+
+        $full = $this->diff()->compare($before, $after);
+        $filtered = $full->except(['nonexistent']);
+
+        $this->assertCount(count($full->getChanges()), $filtered->getChanges());
+    }
+
+    public function test_only_returns_new_instance(): void
+    {
+        $result = new DiffResult([
+            new AttributeChange('name', 'Alice', 'Bob', 'Full Name'),
+        ]);
+
+        $filtered = $result->only(['name']);
+
+        $this->assertNotSame($result, $filtered);
+    }
+
+    public function test_except_returns_new_instance(): void
+    {
+        $result = new DiffResult([
+            new AttributeChange('name', 'Alice', 'Bob', 'Full Name'),
+        ]);
+
+        $filtered = $result->except(['email']);
+
+        $this->assertNotSame($result, $filtered);
+    }
+
+    // -----------------------------------------------------------------------
+    // DiffResult::getBefore() and getAfter()
+    // -----------------------------------------------------------------------
+
+    public function test_get_before_returns_old_value(): void
+    {
+        $before = $this->makeUser(['name' => 'Alice']);
+        $after = TestUser::find($before->id);
+        $after->name = 'Bob';
+        $after->save();
+
+        $result = $this->diff()->compare($before, $after);
+
+        $this->assertSame('Alice', $result->getBefore('name'));
+    }
+
+    public function test_get_after_returns_new_value(): void
+    {
+        $before = $this->makeUser(['name' => 'Alice']);
+        $after = TestUser::find($before->id);
+        $after->name = 'Bob';
+        $after->save();
+
+        $result = $this->diff()->compare($before, $after);
+
+        $this->assertSame('Bob', $result->getAfter('name'));
+    }
+
+    public function test_get_before_returns_null_for_missing_attribute(): void
+    {
+        $before = $this->makeUser(['name' => 'Alice']);
+        $after = TestUser::find($before->id);
+        $after->name = 'Bob';
+        $after->save();
+
+        $result = $this->diff()->compare($before, $after);
+
+        $this->assertNull($result->getBefore('nonexistent'));
+    }
+
+    public function test_get_after_returns_null_for_missing_attribute(): void
+    {
+        $before = $this->makeUser(['name' => 'Alice']);
+        $after = TestUser::find($before->id);
+        $after->name = 'Bob';
+        $after->save();
+
+        $result = $this->diff()->compare($before, $after);
+
+        $this->assertNull($result->getAfter('nonexistent'));
+    }
+
+    public function test_get_before_returns_null_for_unchanged_attribute(): void
+    {
+        $before = $this->makeUser(['name' => 'Alice']);
+        $after = TestUser::find($before->id);
+        $after->name = 'Bob';
+        $after->save();
+
+        $result = $this->diff()->compare($before, $after);
+
+        $this->assertNull($result->getBefore('email'));
+    }
+
+    public function test_get_after_returns_null_for_unchanged_attribute(): void
+    {
+        $before = $this->makeUser(['name' => 'Alice']);
+        $after = TestUser::find($before->id);
+        $after->name = 'Bob';
+        $after->save();
+
+        $result = $this->diff()->compare($before, $after);
+
+        $this->assertNull($result->getAfter('email'));
+    }
+
+    // -----------------------------------------------------------------------
     // Facade
     // -----------------------------------------------------------------------
 

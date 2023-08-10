@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-03-22
+
+### Added
+- `DiffResult::only(array $attributes)` — returns a new DiffResult containing only changes for the specified attributes
+- `DiffResult::except(array $attributes)` — returns a new DiffResult excluding the specified attributes
+- `DiffResult::getBefore(string $attribute)` — returns the old value for a specific attribute (null if not in diff)
+- `DiffResult::getAfter(string $attribute)` — returns the new value for a specific attribute (null if not in diff)
+- Tests for only/except filtering and getBefore/getAfter accessors
+
 ## [1.1.4] - 2026-03-21
 
 ### Changed
