@@ -3,6 +3,7 @@
 [![Tests](https://github.com/philiprehberger/laravel-model-diff/actions/workflows/tests.yml/badge.svg)](https://github.com/philiprehberger/laravel-model-diff/actions/workflows/tests.yml)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/philiprehberger/laravel-model-diff.svg)](https://packagist.org/packages/philiprehberger/laravel-model-diff)
 [![License](https://img.shields.io/github/license/philiprehberger/laravel-model-diff)](LICENSE)
+[![Sponsor](https://img.shields.io/badge/sponsor-GitHub%20Sponsors-ec6cb9)](https://github.com/sponsors/philiprehberger)
 
 Track and display structured differences between Eloquent model versions with human-readable labels.
 
