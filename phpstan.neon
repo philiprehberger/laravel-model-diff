@@ -1,0 +1,14 @@
+includes:
+    - vendor/nunomaduro/larastan/extension.neon
+
+parameters:
+    level: 8
+
+    paths:
+        - src
+
+    ignoreErrors:
+        # Eloquent magic is hard to statically analyse
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Model::#'
+
+    checkMissingIterableValueType: false
