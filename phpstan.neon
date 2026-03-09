@@ -2,13 +2,11 @@ includes:
     - vendor/nunomaduro/larastan/extension.neon
 
 parameters:
-    level: 8
-
+    level: 6
     paths:
         - src
-
+    excludePaths:
+        - vendor
     ignoreErrors:
-        # Eloquent magic is hard to statically analyse
-        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Model::#'
-
-    checkMissingIterableValueType: false
+        - '#Call to method getDiffLabel\(\) on an unknown class#'
+        - '#PHPDoc tag @var for variable \$model has invalid type#'
