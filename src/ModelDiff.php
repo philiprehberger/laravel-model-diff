@@ -379,7 +379,7 @@ class ModelDiff
     private function getLabelForAttribute(Model $model, string $attribute): string
     {
         if (in_array(HasDiffLabels::class, class_uses_recursive($model), true)) {
-            /** @var \PhilipRehberger\ModelDiff\Concerns\HasDiffLabels $model */
+            /** @var HasDiffLabels $model */
             return $model->getDiffLabel($attribute);
         }
 
