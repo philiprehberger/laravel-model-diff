@@ -222,11 +222,16 @@ The package normalizes values before comparing them, so you never get false posi
 | Cast type | Normalization |
 |-----------|---------------|
 | `date`, `datetime`, `immutable_date/datetime` | Parsed to Carbon and formatted with `date_format` config |
+| `timestamp` | Parsed to Carbon and formatted with `date_format` config |
 | `array`, `json`, `object`, `collection` | Decoded and compared by content, not by serialized string |
 | `boolean`, `bool` | Strict `(bool)` cast before comparison |
 | `integer`, `int` | Strict `(int)` cast |
-| `float`, `double`, `real`, `decimal` | Strict `(float)` cast |
+| `float`, `double`, `real` | Strict `(float)` cast |
+| `decimal:N` | Strict `(float)` cast |
 | Backed enum (`SomeEnum::class`) | Compared by `->value`; stored as scalar in `AttributeChange` |
+| Unit enum (`SomeEnum::class` without backing) | Compared by `->name`; stored as string in `AttributeChange` |
+
+> **Note:** Associative arrays are compared order-insensitively — `['a' => 1, 'b' => 2]` equals `['b' => 2, 'a' => 1]`. Sequential (list) arrays are compared in order.
 
 ---
 
