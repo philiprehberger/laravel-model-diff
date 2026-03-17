@@ -2,8 +2,6 @@
 
 [![Tests](https://github.com/philiprehberger/laravel-model-diff/actions/workflows/tests.yml/badge.svg)](https://github.com/philiprehberger/laravel-model-diff/actions/workflows/tests.yml)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/philiprehberger/laravel-model-diff.svg)](https://packagist.org/packages/philiprehberger/laravel-model-diff)
-[![Total Downloads](https://img.shields.io/packagist/dt/philiprehberger/laravel-model-diff.svg)](https://packagist.org/packages/philiprehberger/laravel-model-diff)
-[![PHP Version Require](https://img.shields.io/packagist/php-v/philiprehberger/laravel-model-diff.svg)](https://packagist.org/packages/philiprehberger/laravel-model-diff)
 [![License](https://img.shields.io/github/license/philiprehberger/laravel-model-diff)](LICENSE)
 
 Track and display structured differences between Eloquent model versions with human-readable labels.
@@ -156,7 +154,9 @@ $client->getDiffLabel('phone_number'); // "Phone Number"
 
 ---
 
-## DiffResult API
+## API
+
+### `DiffResult`
 
 | Method | Return type | Description |
 |--------|-------------|-------------|
@@ -198,7 +198,7 @@ $client->getDiffLabel('phone_number'); // "Phone Number"
 
 ---
 
-## AttributeChange API
+### `AttributeChange`
 
 | Property | Type | Description |
 |----------|------|-------------|
@@ -275,12 +275,6 @@ vendor/bin/pint --test
 vendor/bin/phpstan analyse
 ```
 
-## Changelog
-
-Please see [CHANGELOG.md](CHANGELOG.md) for recent changes.
-
----
-
 ## License
 
-The MIT License (MIT). Please see [LICENSE](LICENSE) for more information.
+MIT
