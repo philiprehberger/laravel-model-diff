@@ -2,15 +2,9 @@
 
 [![Tests](https://github.com/philiprehberger/laravel-model-diff/actions/workflows/tests.yml/badge.svg)](https://github.com/philiprehberger/laravel-model-diff/actions/workflows/tests.yml)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/philiprehberger/laravel-model-diff.svg)](https://packagist.org/packages/philiprehberger/laravel-model-diff)
-[![Total Downloads](https://img.shields.io/packagist/dt/philiprehberger/laravel-model-diff.svg)](https://packagist.org/packages/philiprehberger/laravel-model-diff)
-[![PHP Version Require](https://img.shields.io/packagist/php-v/philiprehberger/laravel-model-diff.svg)](https://packagist.org/packages/philiprehberger/laravel-model-diff)
 [![License](https://img.shields.io/github/license/philiprehberger/laravel-model-diff)](LICENSE)
 
 Track and display structured differences between Eloquent model versions with human-readable labels.
-
-`laravel-model-diff` gives you a clean, cast-aware diff between two snapshots of the same model (or between a model's dirty state and its last-saved values). It handles dates, JSON/arrays, booleans, backed enums, and numeric types correctly, and lets you attach human-readable labels to any attribute.
-
----
 
 ## Requirements
 
@@ -156,7 +150,9 @@ $client->getDiffLabel('phone_number'); // "Phone Number"
 
 ---
 
-## DiffResult API
+## API
+
+### `DiffResult`
 
 | Method | Return type | Description |
 |--------|-------------|-------------|
@@ -197,7 +193,7 @@ $client->getDiffLabel('phone_number'); // "Phone Number"
 ```
 
 
-## AttributeChange API
+### `AttributeChange`
 
 | Property | Type | Description |
 |----------|------|-------------|
@@ -265,33 +261,15 @@ $result = $diff->compare($before, $after);
 
 ---
 
-## Testing
+## Development
 
 ```bash
 composer install
 vendor/bin/phpunit
-```
-
-Code style:
-
-```bash
-vendor/bin/pint
-```
-
-Static analysis:
-
-```bash
+vendor/bin/pint --test
 vendor/bin/phpstan analyse
 ```
 
----
-
-## Changelog
-
-Please see [CHANGELOG.md](CHANGELOG.md) for recent changes.
-
----
-
 ## License
 
-The MIT License (MIT). Please see [LICENSE](LICENSE) for more information.
+MIT
