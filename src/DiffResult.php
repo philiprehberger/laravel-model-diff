@@ -45,6 +45,60 @@ class DiffResult
     }
 
     /**
+     * Returns a new DiffResult containing only changes for the specified attributes.
+     *
+     * @param  string[]  $attributes
+     */
+    public function only(array $attributes): self
+    {
+        return new self(array_values(array_filter(
+            $this->changes,
+            fn (AttributeChange $change) => in_array($change->attribute, $attributes, true),
+        )));
+    }
+
+    /**
+     * Returns a new DiffResult excluding changes for the specified attributes.
+     *
+     * @param  string[]  $attributes
+     */
+    public function except(array $attributes): self
+    {
+        return new self(array_values(array_filter(
+            $this->changes,
+            fn (AttributeChange $change) => ! in_array($change->attribute, $attributes, true),
+        )));
+    }
+
+    /**
+     * Returns the old value for a specific attribute, or null if not in the diff.
+     */
+    public function getBefore(string $attribute): mixed
+    {
+        foreach ($this->changes as $change) {
+            if ($change->attribute === $attribute) {
+                return $change->old;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the new value for a specific attribute, or null if not in the diff.
+     */
+    public function getAfter(string $attribute): mixed
+    {
+        foreach ($this->changes as $change) {
+            if ($change->attribute === $attribute) {
+                return $change->new;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Returns a plain array representation of all changes.
      *
      * @return array<int, array{attribute: string, old: mixed, new: mixed, label: string}>

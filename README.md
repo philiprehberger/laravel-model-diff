@@ -106,6 +106,34 @@ $result = ModelDiff::ignoring(['internal_notes', 'cache_key'])
     ->compare($before, $after);
 ```
 
+### Filtering results
+
+Use `only()` and `except()` to narrow a `DiffResult` after comparison:
+
+```php
+$result = ModelDiff::compare($before, $after);
+
+// Keep only specific attributes
+$nameAndEmail = $result->only(['name', 'email']);
+
+// Exclude specific attributes
+$withoutMetadata = $result->except(['metadata', 'internal_notes']);
+```
+
+### Accessing individual values
+
+Retrieve the old or new value of a single attribute without iterating:
+
+```php
+$result = ModelDiff::compare($before, $after);
+
+$result->getBefore('name'); // 'Alice'
+$result->getAfter('name');  // 'Bob'
+
+// Returns null when the attribute is not in the diff
+$result->getBefore('unchanged_field'); // null
+```
+
 ### Human-Readable Labels
 
 #### Using the HasDiffLabels trait
@@ -147,6 +175,10 @@ $client->getDiffLabel('phone_number'); // "Phone Number"
 | `hasChanges()` | `bool` | `true` when at least one attribute changed |
 | `changedAttributes()` | `string[]` | Names of changed attributes |
 | `getChanges()` | `AttributeChange[]` | All change objects |
+| `only(string[] $attributes)` | `DiffResult` | New result with only the specified attributes |
+| `except(string[] $attributes)` | `DiffResult` | New result excluding the specified attributes |
+| `getBefore(string $attribute)` | `mixed` | Old value for an attribute (`null` if not in diff) |
+| `getAfter(string $attribute)` | `mixed` | New value for an attribute (`null` if not in diff) |
 | `toArray()` | `array` | Plain array — one entry per change |
 | `toHumanReadable()` | `array` | Keyed by label; values formatted for display |
 
